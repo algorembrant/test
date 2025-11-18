@@ -1,27 +1,17 @@
 import json
-import requests
 from pathlib import Path
 import re
 
 # ----------------------------
-# GitHub raw README URL
+# PATH SETUP  (all inside the same folder)
 # ----------------------------
-readme_url = "https://raw.githubusercontent.com/algorembrant/test/main/README.md"
+base = Path(__file__).parent  # directory of testing.py
 
-# Notebook path (local file)
-notebook_path = Path("Market Profile (volumedata ver).ipynb")
-
-# ----------------------------
-# Download README.md
-# ----------------------------
-response = requests.get(readme_url)
-if response.status_code != 200:
-    raise Exception("Could not download README.md from GitHub")
-
-readme_content = response.text
+notebook_path = base / "Market Profile (volumedata ver).ipynb"
+readme_path = base / "testme.md"
 
 # ----------------------------
-# Count notebook code lines
+# COUNT LINES IN NOTEBOOK
 # ----------------------------
 with open(notebook_path, "r", encoding="utf-8") as f:
     nb = json.load(f)
@@ -32,8 +22,10 @@ for cell in nb["cells"]:
         for item in cell["source"]:
             code_lines += item.count("\n") + 1
 
+print(f"Total lines of code in notebook: {code_lines}")
+
 # ----------------------------
-# Embed stats
+# GENERATE MARKDOWN SNIPPET
 # ----------------------------
 md_snippet = f"""### Project Code Statistics
 
@@ -41,13 +33,23 @@ md_snippet = f"""### Project Code Statistics
 - **Lines of code:** {code_lines}
 """
 
-pattern = r"(<!-- CODE_STATS_START -->)(.*?)(<!-- CODE_STATS_END -->)"
-new_content = re.sub(pattern, rf"\1\n{md_snippet}\3", readme_content, flags=re.DOTALL)
+# ----------------------------
+# READ testme.md
+# ----------------------------
+with open(readme_path, "r", encoding="utf-8") as f:
+    readme_content = f.read()
 
 # ----------------------------
-# Save updated README locally
+# REPLACE SECTION IN testme.md
 # ----------------------------
-with open("README.md", "w", encoding="utf-8") as f:
+pattern = r"(<!-- CODE_STATS_START -->)(.*?)(<!-- CODE_STATS_END -->)"
+replacement = rf"\1\n{md_snippet}\n\3"
+new_content = re.sub(pattern, replacement, readme_content, flags=re.DOTALL)
+
+# ----------------------------
+# WRITE BACK TO testme.md
+# ----------------------------
+with open(readme_path, "w", encoding="utf-8") as f:
     f.write(new_content)
 
-print("README.md has been created with updated stats.")
+print("testme.md updated successfully!")
