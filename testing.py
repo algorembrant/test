@@ -47,7 +47,7 @@ new_content = re.sub(pattern, rf"\1\n{md_snippet}\3", readme_content, flags=re.D
 # ----------------------------
 # Save updated README locally
 # ----------------------------
-with open("README_UPDATED.md", "w", encoding="utf-8") as f:
+with open("README.md", "w", encoding="utf-8") as f:
     f.write(new_content)
 
-print("README_UPDATED.md has been created with updated stats.")
+print("README.md has been created with updated stats.")
