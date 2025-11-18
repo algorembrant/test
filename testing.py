@@ -1,16 +1,22 @@
 import json
 from pathlib import Path
 
-# --- Notebook path ---
+# Notebook path
 notebook_path = Path("Market Profile (volumedata ver).ipynb")
 
-# --- Count code lines ---
+# Load notebook
 with open(notebook_path, "r", encoding="utf-8") as f:
     nb = json.load(f)
 
-code_lines = sum(len(cell["source"]) for cell in nb["cells"] if cell["cell_type"] == "code")
+# Count lines in code cells
+code_lines = 0
+for cell in nb["cells"]:
+    if cell["cell_type"] == "code":
+        # Each item in cell["source"] may contain multiple lines
+        for item in cell["source"]:
+            code_lines += item.count("\n") + 1  # +1 for last line if no newline
 
-# --- Generate Markdown snippet ---
+# Generate Markdown snippet
 md_snippet = f"""
 ### Project Code Statistics
 
