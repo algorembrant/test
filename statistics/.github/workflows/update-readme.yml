@@ -1,13 +1,12 @@
-name: Update File Sizes
+name: Update Line Count
 
 on:
   push:
     branches:
       - main
-  workflow_dispatch:
 
 jobs:
-  update-file-sizes:
+  update-readme:
     runs-on: ubuntu-latest
 
     steps:
@@ -20,12 +19,4 @@ jobs:
           python-version: "3.11"
 
       - name: Run file size script
-        run: python statistics/update_bytes.py
-
-      - name: Commit changes
-        run: |
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
-          git add statistics/testme.md
-          git diff --cached --quiet || git commit -m "Auto-update file sizes"
-          git push
+        run: python statistics/testing.py
