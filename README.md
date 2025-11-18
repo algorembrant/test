@@ -1,8 +1,4 @@
 ### Project Code Statistics
 
-- Python scripts: 250 lines
-- Jupyter notebooks: 180 lines
-
-<!-- stats start -->
-![Code stats](README.md)
-<!-- stats end -->
+- **Notebook:** [Market Profile (volumedata ver).ipynb](Market Profile (volumedata ver).ipynb)
+- **Lines of code:** 420
