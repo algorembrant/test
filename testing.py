@@ -1,3 +1,5 @@
+!pip install json
+
 import json
 from pathlib import Path
 
