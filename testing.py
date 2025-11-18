@@ -1,17 +1,25 @@
 import json
 from pathlib import Path
 
-def count_py_lines(path):
-    return sum(1 for _ in open(path, "r", encoding="utf-8"))
+# --- Notebook path ---
+notebook_path = Path("Market Profile (volumedata ver).ipynb")
 
-def count_ipynb_lines(path):
-    with open(path, "r", encoding="utf-8") as f:
-        nb = json.load(f)
-    return sum(len(cell["source"]) for cell in nb["cells"] if cell["cell_type"] == "code")
+# --- Count code lines ---
+with open(notebook_path, "r", encoding="utf-8") as f:
+    nb = json.load(f)
 
-# Example usage
-py_lines = count_py_lines("sample.py")
-nb_lines = count_ipynb_lines("Market Profile (volumedata ver).ipynb")
+code_lines = sum(len(cell["source"]) for cell in nb["cells"] if cell["cell_type"] == "code")
 
-print(f"Python lines: {py_lines}")
-print(f"Notebook lines: {nb_lines}")
+# --- Generate Markdown snippet ---
+md_snippet = f"""
+### Project Code Statistics
+
+- **Notebook:** [{notebook_path.name}]({notebook_path})
+- **Lines of code:** {code_lines}
+"""
+
+# Save to a file (optional)
+with open("CODE_STATS.md", "w", encoding="utf-8") as f:
+    f.write(md_snippet)
+
+print(md_snippet)
