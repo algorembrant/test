@@ -4,5 +4,5 @@
 - Jupyter notebooks: 180 lines
 
 <!-- stats start -->
-![Code stats](stats.md)
+![Code stats](README.md)
 <!-- stats end -->
