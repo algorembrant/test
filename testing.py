@@ -1,16 +1,27 @@
-!pip install json
-
 import json
+import requests
 from pathlib import Path
+import re
 
 # ----------------------------
-# Configuration
+# GitHub raw README URL
 # ----------------------------
+readme_url = "https://raw.githubusercontent.com/algorembrant/test/main/README.md"
+
+# Notebook path (local file)
 notebook_path = Path("Market Profile (volumedata ver).ipynb")
-readme_path = Path("README.md")
 
 # ----------------------------
-# Count lines in notebook
+# Download README.md
+# ----------------------------
+response = requests.get(readme_url)
+if response.status_code != 200:
+    raise Exception("Could not download README.md from GitHub")
+
+readme_content = response.text
+
+# ----------------------------
+# Count notebook code lines
 # ----------------------------
 with open(notebook_path, "r", encoding="utf-8") as f:
     nb = json.load(f)
@@ -22,27 +33,21 @@ for cell in nb["cells"]:
             code_lines += item.count("\n") + 1
 
 # ----------------------------
-# Generate Markdown snippet
+# Embed stats
 # ----------------------------
 md_snippet = f"""### Project Code Statistics
 
-- **Notebook:** [{notebook_path.name}]({notebook_path})
+- **Notebook:** {notebook_path.name}
 - **Lines of code:** {code_lines}
 """
 
-# ----------------------------
-# Update README.md
-# ----------------------------
-with open(readme_path, "r", encoding="utf-8") as f:
-    readme_content = f.read()
-
-# Replace between the markers
-import re
 pattern = r"(<!-- CODE_STATS_START -->)(.*?)(<!-- CODE_STATS_END -->)"
 new_content = re.sub(pattern, rf"\1\n{md_snippet}\3", readme_content, flags=re.DOTALL)
 
-with open(readme_path, "w", encoding="utf-8") as f:
+# ----------------------------
+# Save updated README locally
+# ----------------------------
+with open("README_UPDATED.md", "w", encoding="utf-8") as f:
     f.write(new_content)
 
-print("README.md updated with code stats!")
-print(md_snippet)
+print("README_UPDATED.md has been created with updated stats.")
