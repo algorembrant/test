@@ -2,3 +2,7 @@
 
 - Python scripts: 250 lines
 - Jupyter notebooks: 180 lines
+
+<!-- stats start -->
+![Code stats](stats.md)
+<!-- stats end -->
