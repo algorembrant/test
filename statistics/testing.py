@@ -1,55 +1,35 @@
-import json
 from pathlib import Path
 import re
 
-# ----------------------------
-# PATH SETUP  (all inside the same folder)
-# ----------------------------
-base = Path(__file__).parent  # directory of testing.py
+base = Path.cwd() / "statistics"
 
-notebook_path = base / "Market Profile (volumedata ver).ipynb"
+files = [
+    base / "testing.py",
+    base / "testme.md",
+    base / "Market Profile (volumedata ver).ipynb"
+]
+
+md_snippet = "### Project File Size (Bytes)\n\n"
+
+for file in files:
+    if file.exists():
+        size = file.stat().st_size
+        md_snippet += f"- **{file.name}**: `{size}` bytes\n"
+    else:
+        md_snippet += f"- **{file.name}**: *File not found*\n"
+
 readme_path = base / "testme.md"
+if readme_path.exists():
+    with open(readme_path, "r", encoding="utf-8") as f:
+        content = f.read()
 
-# ----------------------------
-# COUNT LINES IN NOTEBOOK
-# ----------------------------
-with open(notebook_path, "r", encoding="utf-8") as f:
-    nb = json.load(f)
+    pattern = r"(<!-- CODE_STATS_START -->)(.*?)(<!-- CODE_STATS_END -->)"
+    new_content = re.sub(pattern, rf"\1\n{md_snippet}\n\3", content, flags=re.DOTALL)
 
-code_lines = 0
-for cell in nb["cells"]:
-    if cell["cell_type"] == "code":
-        for item in cell["source"]:
-            code_lines += item.count("\n") + 1
+    with open(readme_path, "w", encoding="utf-8") as f:
+        f.write(new_content)
 
-print(f"Total lines of code in notebook: {code_lines}")
-
-# ----------------------------
-# GENERATE MARKDOWN SNIPPET
-# ----------------------------
-md_snippet = f"""### Project Code Statistics
-
-- **Notebook:** {notebook_path.name}
-- **Lines of code:** {code_lines}
-"""
-
-# ----------------------------
-# READ testme.md
-# ----------------------------
-with open(readme_path, "r", encoding="utf-8") as f:
-    readme_content = f.read()
-
-# ----------------------------
-# REPLACE SECTION IN testme.md
-# ----------------------------
-pattern = r"(<!-- CODE_STATS_START -->)(.*?)(<!-- CODE_STATS_END -->)"
-replacement = rf"\1\n{md_snippet}\n\3"
-new_content = re.sub(pattern, replacement, readme_content, flags=re.DOTALL)
-
-# ----------------------------
-# WRITE BACK TO testme.md
-# ----------------------------
-with open(readme_path, "w", encoding="utf-8") as f:
-    f.write(new_content)
-
-print("testme.md updated successfully!")
+    print("testme.md updated with file sizes!")
+    print(md_snippet)
+else:
+    print("testme.md not found!")
